@@ -267,7 +267,7 @@ const frame = (t) => {
   if (!parts) return;
   const { cy, s, cx, link, dots, cross, phone, rings, label2, dongle } = parts;
   const p = reduce ? 0.2 : (t % LOOP) / LOOP;
-  const near = cx + 130 * s, far = W - Math.max(60, W * 0.1);
+  const near = cx + 155 * s, far = W - Math.max(60, W * 0.1);
   // 0-.25 armed nearby, .25-.6 walking, .6-1 alarm
   const walk = Math.min(1, Math.max(0, (p - 0.25) / 0.35));
   const ease = walk < .5 ? 2 * walk * walk : 1 - (-2 * walk + 2) ** 2 / 2;
@@ -307,9 +307,14 @@ const frame = (t) => {
   if (!reduce) requestAnimationFrame(frame);
 };
 
-const sceneObserver = new ResizeObserver(() => { build(); if (reduce) frame(0); });
+// Start the loop only once the scene has been measured and built, and only once.
+let started = false;
+const sceneObserver = new ResizeObserver(() => {
+  build();
+  if (reduce) frame(0);
+  else if (!started) { started = true; requestAnimationFrame(frame); }
+});
 sceneObserver.observe(svg);
-if (!reduce) requestAnimationFrame(frame);
 }
 </script>
 </body>
