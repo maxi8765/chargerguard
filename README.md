@@ -6,6 +6,6 @@ Plug a Feasycom FSC-BP101E USB Bluetooth beacon into your charger's spare USB po
 
 Website: https://maxi8765.github.io/chargerguard/
 
-Download: [ChargerGuard.apk](https://maxi8765.github.io/chargerguard/ChargerGuard.apk) (version 1.0.0). Android 8 or later.
+Download: [ChargerGuard.apk](https://maxi8765.github.io/chargerguard/ChargerGuard.apk) (version 1.0.1). Android 8 or later.
 
 Free to use and share, as is, with no warranty.
