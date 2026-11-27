@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charger Guard</title>
+<meta name="description" content="Free Android app that sounds an alarm when you walk away and leave your phone charger behind. Plug a small Bluetooth beacon into your charger's spare USB port.">
+<link rel="canonical" href="https://maxi8765.github.io/chargerguard/">
+<meta property="og:title" content="Charger Guard">
+<meta property="og:description" content="A free Android alarm for the charger you leave behind. Uses a small USB Bluetooth beacon in your charger's spare port.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://maxi8765.github.io/chargerguard/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE everyday: a small free tool, plain and friendly, no hype
+   IDEA the app's own connection diagram: charger with beacon, phone, and the link that breaks
+   PICTURE wide animated scene, phone walks away from the charger until the link snaps and the alarm rings
+   COLOUR the app's forest #1F3A2E and lime #C8E65A; white lower sections; amber searching, coral alarm
+   TYPE Outfit 700 display + Inter text
+   LAYOUT laptop: nav, title and buttons across the top of a forest band, scene full width beneath; phone: title, scene, buttons */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#0f1a15);--ink:light-dark(#17241d,#e6eedd);--muted:light-dark(#4f5e55,#a9b8ac);--forest:#1f3a2e;--forest2:#2c4d3e;--lime:#c8e65a;--pale:#e9f0dc;--amber:#f2c14e;--coral:#f07a5f;--line:light-dark(#dfe5d8,#2a3a31);--panel:light-dark(#f3f6ee,#16241d)}
+:root[data-theme=light]{color-scheme:light}
+:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,sans-serif;overflow-x:clip}
+a{color:inherit}
+h1,h2,h3{font-family:Outfit,Inter,sans-serif;line-height:1.05;letter-spacing:-.02em;margin:0;text-wrap:balance}
+h2{font-size:clamp(28px,4vw,40px)}
+h3{font-size:20px;letter-spacing:-.01em}
+p{margin:0}
+.wrap{max-width:1180px;margin:0 auto}
+.band{padding:clamp(36px,5vw,72px) max(5vw,16px)}
+.hero{background:var(--forest);color:var(--pale);padding-top:0}
+nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px 22px;padding:18px 0 10px}
+nav .brand{font:700 20px Outfit,sans-serif;color:var(--lime);text-decoration:none;margin-right:auto;display:flex;align-items:center;gap:10px}
+nav a{text-decoration:none;font-size:15px;opacity:.9}
+nav a:hover{opacity:1;text-decoration:underline}
+.top{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:28px 48px;align-items:end;padding-top:clamp(20px,4vw,48px)}
+.hero h1{font-size:clamp(36px,5.4vw,58px);color:#fff}
+.lede{font-size:18px;margin-top:16px;max-width:36em;color:var(--pale)}
+.cta{display:flex;flex-direction:column;gap:12px}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:12px 22px;border-radius:999px;font:600 17px Inter,sans-serif;text-decoration:none;border:2px solid transparent;text-align:center}
+.btn.primary{background:var(--lime);color:var(--forest)}
+.btn.primary:hover{background:#d6ef74}
+.btn.ghost{border-color:#5f7f6b;color:#fff}
+.btn.ghost:hover{border-color:var(--lime)}
+.btn:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.small{font-size:14px;color:#b9cbb7}
+.scene{margin-top:clamp(24px,4vw,44px);position:relative;height:clamp(230px,30vw,330px)}
+.scene svg{position:absolute;inset:0;width:100%;height:100%}
+.status{position:absolute;left:0;right:0;bottom:6px;text-align:center;font:600 18px Outfit,sans-serif;color:#fff;transition:color .3s}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(13em,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:18px;overflow:hidden;margin-top:28px}
+.facts div{background:var(--bg);padding:20px}
+.facts b{display:block;font:700 26px Outfit,sans-serif;white-space:nowrap}
+.facts span{color:var(--muted);font-size:15px}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:28px}
+.step{background:var(--panel);border-radius:18px;padding:22px}
+.step svg{width:100%;height:120px;display:block;margin-bottom:14px}
+.step p{color:var(--muted);margin-top:8px}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:start}
+.buy{background:var(--forest);color:var(--pale);border-radius:22px;padding:26px;display:grid;grid-template-columns:120px minmax(0,1fr);gap:22px;align-items:center}
+.buy h3{color:#fff}
+.buy p{margin-top:6px}
+.buy .btn{margin-top:16px;display:inline-flex}
+ol.list,ul.list{margin:16px 0 0;padding-left:1.3em}
+.list li{margin:10px 0}
+.list li::marker{color:var(--forest2);font-weight:700}
+:root[data-theme=dark] .list li::marker{color:var(--lime)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .list li::marker{color:var(--lime)}}
+.muted{color:var(--muted)}
+.lead2{margin-top:12px;color:var(--muted);max-width:44em}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(16em,1fr));gap:18px;margin-top:26px}
+.card{border:1px solid var(--line);border-radius:18px;padding:20px}
+.card p{color:var(--muted);margin-top:6px;font-size:15px}
+details{border-top:1px solid var(--line);padding:16px 0}
+details:last-child{border-bottom:1px solid var(--line)}
+summary{cursor:pointer;font:600 18px Outfit,sans-serif;list-style-position:outside;min-height:28px}
+details p{margin-top:10px;color:var(--muted);max-width:52em}
+footer{background:var(--forest);color:var(--pale)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:space-between;font-size:15px}
+.note{margin-top:22px;font-size:14px;color:var(--muted)}
+@media(max-width:860px){.top{grid-template-columns:minmax(0,1fr)}.steps{grid-template-columns:minmax(0,1fr)}.split{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){nav a:not(.brand){font-size:14px}.buy{grid-template-columns:minmax(0,1fr)}.buy svg{width:110px}.status{font-size:16px}}
+@media(prefers-reduced-motion:reduce){.status{transition:none}}
+</style>
+</head>
+<body>
+
+<header class="band hero">
+  <div class="wrap">
+    <nav>
+      <a class="brand" href="#top"><svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="7" y="3" width="12" height="20" rx="3" fill="none" stroke="#c8e65a" stroke-width="2.2"/><path d="M14 7l-4 6h3l-1 5 4-6h-3z" fill="#c8e65a"/></svg>Charger Guard</a>
+      <a href="#how">How it works</a>
+      <a href="#setup">Setup</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#faq">Questions</a>
+    </nav>
+    <div class="top" id="top">
+      <div>
+        <h1>A free alarm for the charger you leave behind</h1>
+        <p class="lede">People keep leaving their chargers behind. If your charger has a spare USB port, a small Bluetooth beacon plugged into it lets your Android phone warn you when you walk away without it. The app is free to use, with no ads, no account and nothing to buy from me.</p>
+      </div>
+      <div class="cta">
+        <span class="btn primary" id="dl" aria-disabled="true" style="opacity:.75">Android download coming shortly</span>
+        <a class="btn ghost" href="https://www.aliexpress.com/item/4000083271311.html">The beacon (about A$11, AliExpress)</a>
+        <p class="small">Android 8 or later. Version 0.3.2. The beacon is sold by a third party; I don&rsquo;t get anything from it.</p>
+      </div>
+    </div>
+    <div class="scene" aria-label="Animation: a phone moves away from a charger with a beacon until the link breaks and the alarm sounds">
+      <svg id="scene" role="img"></svg>
+      <div class="status" id="status" aria-live="off">Armed: beacon in range</div>
+    </div>
+  </div>
+</header>
+
+<section class="band" id="how">
+  <div class="wrap">
+    <h2>How it works</h2>
+    <p class="lead2">The beacon is a USB stick about the size of a fingernail. It broadcasts a Bluetooth signal about ten times a second. Charger Guard listens for it, and when it stops hearing it after you unplug, the alarm goes off.</p>
+    <div class="steps">
+      <div class="step">
+        <svg viewBox="0 0 240 120" aria-hidden="true"><rect x="84" y="20" width="72" height="72" rx="14" fill="none" stroke="currentColor" stroke-width="4"/><line x1="106" y1="92" x2="106" y2="110" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><line x1="134" y1="92" x2="134" y2="110" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><rect x="56" y="46" width="34" height="20" rx="4" fill="#c8e65a" stroke="#1f3a2e" stroke-width="2"/><path d="M48 44a20 20 0 0 0 0 24M38 36a32 32 0 0 0 0 40" fill="none" stroke="#7fa35a" stroke-width="3.5" stroke-linecap="round"/></svg>
+        <h3>1. Plug the beacon into your charger</h3>
+        <p>Use the spare USB-A port on your wall charger, laptop or power board. The port needs to stay powered when your phone isn't plugged in.</p>
+      </div>
+      <div class="step">
+        <svg viewBox="0 0 240 120" aria-hidden="true"><rect x="96" y="10" width="48" height="96" rx="10" fill="none" stroke="currentColor" stroke-width="4"/><path d="M124 34l-14 22h10l-4 22 15-25h-10z" fill="#7fa35a"/><line x1="120" y1="106" x2="120" y2="118" stroke="currentColor" stroke-width="4"/></svg>
+        <h3>2. Charge as normal</h3>
+        <p>When you plug the phone in, Charger Guard looks for the beacon. Once it hears it, the guard is armed. You don't need to open the app.</p>
+      </div>
+      <div class="step">
+        <svg viewBox="0 0 240 120" aria-hidden="true"><rect x="20" y="34" width="44" height="44" rx="9" fill="none" stroke="currentColor" stroke-width="4"/><line x1="72" y1="56" x2="104" y2="56" stroke="#f07a5f" stroke-width="4" stroke-linecap="round"/><line x1="136" y1="56" x2="160" y2="56" stroke="#f07a5f" stroke-width="4" stroke-linecap="round"/><path d="M112 48l16 16M128 48l-16 16" stroke="#f07a5f" stroke-width="5" stroke-linecap="round"/><rect x="172" y="18" width="40" height="78" rx="8" fill="none" stroke="currentColor" stroke-width="4"/><path d="M220 40a18 18 0 0 1 0 34M164 40a18 18 0 0 0 0 34" fill="none" stroke="#f07a5f" stroke-width="3.5" stroke-linecap="round"/></svg>
+        <h3>3. Walk away without it, and it rings</h3>
+        <p>After you unplug, if the beacon is out of range for 5 seconds (you can set 2 to 30), the phone sounds an alarm-clock style alert, even on silent or Do Not Disturb if you allow it.</p>
+      </div>
+    </div>
+    <div class="facts">
+      <div><b>About 25 m</b><span>where the alarm went off in our own indoor test</span></div>
+      <div><b>About A$11</b><span>for the beacon, bought once</span></div>
+      <div><b>Free</b><span>the app, with no account or subscription</span></div>
+      <div><b>No pairing</b><span>the phone only listens for the beacon</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" style="background:var(--panel)">
+  <div class="wrap split">
+    <div>
+      <h2>What you need</h2>
+      <ul class="list">
+        <li>An Android phone running Android 8 or later. There's no iPhone version.</li>
+        <li>A charger with a spare USB-A port that stays powered. Most dual-port wall chargers and power boards with USB work.</li>
+        <li>One Feasycom FSC-BP101E USB beacon. It's the one this app was built and tested with.</li>
+      </ul>
+    </div>
+    <div class="buy">
+      <svg viewBox="0 0 120 80" aria-hidden="true"><rect x="8" y="22" width="34" height="36" rx="3" fill="#b9c4b0"/><rect x="14" y="30" width="22" height="6" fill="#7d8a76"/><rect x="40" y="16" width="72" height="48" rx="10" fill="#111"/><rect x="40" y="16" width="72" height="10" rx="5" fill="#2b2b2b"/><circle cx="98" cy="40" r="4" fill="#c8e65a"/></svg>
+      <div>
+        <h3>Feasycom FSC-BP101E beacon</h3>
+        <p>Bluetooth 5.2, powered from USB, no battery to change. About A$11 on AliExpress (price checked November 2026).</p>
+        <a class="btn primary" href="https://www.aliexpress.com/item/4000083271311.html">Open on AliExpress</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="setup">
+  <div class="wrap split">
+    <div>
+      <h2>Setup takes about two minutes</h2>
+      <ol class="list">
+        <li>Download the APK on your phone and open it. Android will ask you to allow installs from your browser or file manager; allow it for this install.</li>
+        <li>Open Charger Guard. The setup wizard asks for Nearby devices, precise location and notifications. Android requires location access for Bluetooth scanning.</li>
+        <li>Allow alarm access: alarm-clock style alert, Do Not Disturb access, alarm volume up, and unrestricted battery use.</li>
+        <li>Plug the beacon into your charger, hold the phone next to it and tap Find beacon. Pick the entry marked Feasycom.</li>
+        <li>Play the test alarm, then plug your phone in.</li>
+      </ol>
+    </div>
+    <div>
+      <h2>Other features</h2>
+      <div class="cards" style="margin-top:16px">
+        <div class="card"><h3>Quiet at home</h3><p>Save your home Wi-Fi and Charger Guard switches off completely there: no alarm and no Bluetooth scanning.</p></div>
+        <div class="card"><h3>Battery use</h3><p>It only scans while charging, and after you unplug until you walk away. Never when idle or at home.</p></div>
+        <div class="card"><h3>You set the delay</h3><p>Choose how long the beacon must be out of range before the alarm sounds, from 2 to 30 seconds.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="privacy" style="background:var(--panel)">
+  <div class="wrap split">
+    <div>
+      <h2>Privacy</h2>
+      <p class="lead2">Charger Guard has no account and stores everything on your phone. It never reads GPS coordinates or keeps a location history. Android labels Bluetooth scanning and reading your Wi-Fi name as location access, which is why it asks.</p>
+    </div>
+    <ul class="list">
+      <li>Each time you open the app, it sends one anonymous "app opened" count to the developer, with no device ID, location or personal details. It never retries or reports errors.</li>
+      <li>The beacon address and your home Wi-Fi name are saved only on your phone.</li>
+      <li>It never pairs with or connects to the beacon. It only listens.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="band" id="faq">
+  <div class="wrap">
+    <h2>Questions</h2>
+    <div style="margin-top:20px">
+      <details><summary>What if I unplug the charger from the wall first?</summary><p>The beacon loses power and disappears, so the alarm will go off. Unplug your phone first, or keep the phone near you and tap Stop.</p></details>
+      <details><summary>It stopped working after a while. Why?</summary><p>Some phones, especially OPPO, Xiaomi, Huawei and some Samsung models, shut down background apps to save battery. Allow unrestricted battery use, and on those phones also allow background activity and auto-launch in Charger Guard's app settings. Phone software updates can reset these settings, so check them again after an update.</p></details>
+      <details><summary>Will other beacons work?</summary><p>Any Bluetooth LE beacon that broadcasts from a fixed address should work, but only the FSC-BP101E has been tested.</p></details>
+      <details><summary>Why isn't it on Google Play?</summary><p>It&rsquo;s a free download straight from this page rather than through an app store, which is why Android asks you to allow the install.</p></details>
+      <details><summary>Is there an iPhone version?</summary><p>No. iPhones don't let apps keep listening for Bluetooth beacons in the background in the same way.</p></details>
+      <details><summary>How far away does the alarm go off?</summary><p>It depends on walls, your phone and the delay you choose. In our indoor test it went off at about 25 m with the 5-second delay.</p></details>
+    </div>
+    <p class="note">Charger Guard is free to use and share, as is, with no warranty. AliExpress prices and stock can change.</p>
+  </div>
+</section>
+
+<footer class="band">
+  <div class="wrap">
+    <span>Charger Guard, made in Brisbane by Ian Maxwell.</span>
+    <a href="#top">Back to top</a>
+  </div>
+</footer>
+
+<script>
+{
+const svg = document.getElementById('scene');
+const status = document.getElementById('status');
+const NS = 'http://www.w3.org/2000/svg';
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const LIME = '#c8e65a', AMBER = '#f2c14e', CORAL = '#f07a5f', PALE = '#e9f0dc';
+const el = (tag, attrs) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); svg.appendChild(e); return e; };
+
+let W = 0, H = 0, parts = null;
+const build = () => {
+  W = svg.clientWidth; H = svg.clientHeight;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.innerHTML = '';
+  const cy = H * 0.42, s = Math.min(1.25, Math.max(0.75, H / 300));
+  const cx = Math.max(70, W * 0.13);
+  el('line', { x1: 0, y1: cy + 70 * s, x2: W, y2: cy + 70 * s, stroke: '#2c4d3e', 'stroke-width': 2 });
+  // charger with beacon
+  const g = el('g', { transform: `translate(${cx} ${cy}) scale(${s})` });
+  g.innerHTML = `<rect x="-30" y="-36" width="60" height="72" rx="12" fill="none" stroke="${PALE}" stroke-width="3.5"/>
+    <line x1="-12" y1="36" x2="-12" y2="52" stroke="${PALE}" stroke-width="3.5" stroke-linecap="round"/>
+    <line x1="12" y1="36" x2="12" y2="52" stroke="${PALE}" stroke-width="3.5" stroke-linecap="round"/>
+    <rect id="dongle" x="22" y="-10" width="28" height="20" rx="4" fill="${LIME}"/>`;
+  const label1 = el('text', { x: cx, y: cy + 92 * s, 'text-anchor': 'middle', fill: '#b9cbb7', 'font-size': 14, 'font-family': 'Inter, sans-serif' });
+  label1.textContent = 'Charger + beacon';
+  const link = el('line', { y1: cy, y2: cy, 'stroke-width': 4, 'stroke-linecap': 'round' });
+  const dots = [0, 1, 2].map(() => el('circle', { cy, r: 5, fill: LIME }));
+  const cross = el('path', { fill: 'none', stroke: CORAL, 'stroke-width': 5, 'stroke-linecap': 'round' });
+  const phone = el('g', {});
+  phone.innerHTML = `<rect x="-22" y="-42" width="44" height="84" rx="9" fill="#1f3a2e" stroke="${PALE}" stroke-width="3.5"/><line x1="-7" y1="33" x2="7" y2="33" stroke="${PALE}" stroke-width="3.5" stroke-linecap="round"/>`;
+  const rings = [0, 1].map(() => el('path', { fill: 'none', stroke: CORAL, 'stroke-width': 3.5, 'stroke-linecap': 'round' }));
+  const label2 = el('text', { y: cy + 92 * s, 'text-anchor': 'middle', fill: '#b9cbb7', 'font-size': 14, 'font-family': 'Inter, sans-serif' });
+  label2.textContent = 'Your phone';
+  parts = { cy, s, cx, link, dots, cross, phone, rings, label2, dongle: g.querySelector('#dongle') };
+};
+
+const LOOP = 9000;
+const frame = (t) => {
+  if (!parts) return;
+  const { cy, s, cx, link, dots, cross, phone, rings, label2, dongle } = parts;
+  const p = reduce ? 0.2 : (t % LOOP) / LOOP;
+  const near = cx + 130 * s, far = W - Math.max(60, W * 0.1);
+  // 0-.25 armed nearby, .25-.6 walking, .6-1 alarm
+  const walk = Math.min(1, Math.max(0, (p - 0.25) / 0.35));
+  const ease = walk < .5 ? 2 * walk * walk : 1 - (-2 * walk + 2) ** 2 / 2;
+  const px = near + (far - near) * ease;
+  const bob = walk > 0 && walk < 1 ? Math.sin(t / 110) * 3 : 0;
+  phone.setAttribute('transform', `translate(${px} ${cy + bob}) scale(${s})`);
+  label2.setAttribute('x', px);
+  const x0 = cx + 54 * s, x1 = px - 30 * s;
+  const state = p < 0.25 ? 'linked' : p < 0.5 ? 'stretch' : p < 0.6 ? 'weak' : 'broken';
+  let colour = LIME, text = 'Armed: beacon in range';
+  link.setAttribute('x1', x0); link.setAttribute('x2', x1);
+  link.removeAttribute('stroke-dasharray');
+  cross.setAttribute('d', ''); rings.forEach(r => r.setAttribute('d', ''));
+  dots.forEach(d => d.setAttribute('r', 0));
+  if (state === 'linked' || state === 'stretch') {
+    if (state === 'stretch') text = 'Unplugged: still hearing the beacon';
+    dots.forEach((d, i) => { const ph = ((t % 1800) / 1800 + i / 3) % 1; d.setAttribute('cx', x0 + (x1 - x0) * ph); d.setAttribute('r', 5); });
+  } else if (state === 'weak') {
+    colour = AMBER; text = 'Out of range: waiting 5 seconds';
+    link.setAttribute('stroke-dasharray', '10 10');
+    link.setAttribute('stroke-dashoffset', -(t % 600) / 30);
+  } else {
+    colour = CORAL; text = 'Alarm: you left your charger behind';
+    const mid = (x0 + x1) / 2, k = 10 * s;
+    link.setAttribute('stroke-dasharray', `${(mid - x0) - 20 * s} ${40 * s} 4000`);
+    cross.setAttribute('d', `M${mid - k} ${cy - k}L${mid + k} ${cy + k}M${mid - k} ${cy + k}L${mid + k} ${cy - k}`);
+    const pulse = reduce ? 0 : (t % 700) / 700;
+    rings.forEach((r, i) => {
+      const rad = (34 + i * 14 + pulse * 8) * s;
+      r.setAttribute('d', `M${px + rad * 0.55} ${cy - rad * 0.6}A${rad} ${rad} 0 0 1 ${px + rad * 0.55} ${cy + rad * 0.6}M${px - rad * 0.55} ${cy - rad * 0.6}A${rad} ${rad} 0 0 0 ${px - rad * 0.55} ${cy + rad * 0.6}`);
+      r.setAttribute('opacity', 1 - pulse * 0.6);
+    });
+  }
+  link.setAttribute('stroke', colour);
+  dongle.setAttribute('fill', colour);
+  if (status.textContent !== text) { status.textContent = text; status.style.color = colour === LIME ? '#fff' : colour; }
+  if (!reduce) requestAnimationFrame(frame);
+};
+
+const sceneObserver = new ResizeObserver(() => { build(); if (reduce) frame(0); });
+sceneObserver.observe(svg);
+if (!reduce) requestAnimationFrame(frame);
+}
+</script>
+</body>
+</html>
